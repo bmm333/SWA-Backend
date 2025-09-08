@@ -9,14 +9,18 @@ import express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule,{bodyParser:{limit:'10mb'}});
-  app.enableCors({
-  origin: [
-    'http://192.168.1.7:8080',
-    'http://localhost:8080',
-    'http://localhost:3000',
-    process.env.FRONTEND_URL || 'https://swa-flax.vercel.app',
-  ],
-  credentials: true,
+   app.enableCors({
+    origin: (origin, callback) => {
+      const allowed = [
+        'http://192.168.1.7:8080',
+        'http://localhost:8080',
+        'http://localhost:3000',
+        process.env.FRONTEND_URL || 'https://swa-flax.vercel.app'
+      ].filter(Boolean);
+      if (!origin) return callback(null, true);
+      return allowed.includes(origin) ? callback(null, true) : callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
   });
 
   app.use(express.json({ limit: '10mb' }));
