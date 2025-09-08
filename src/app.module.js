@@ -16,36 +16,12 @@ import { MediaModule } from './media/media.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { WeatherModule } from './weather/weather.module';
-import { User } from './user/entities/user.entity.js';
-import { UserStylePreference } from './user/entities/user-style-preferences.entity.js';
-import { UserColorPreference } from './user/entities/user-color-preferences.entity.js';
-import { UserLifestyle } from './user/entities/user-lifestyle.entity.js';
-import { UserOccasion } from './user/entities/user-occasion.entity.js';
-import { Item } from './item/entities/item.entity.js';
-import { Outfit } from './outfit/entities/outfit.entity.js';
-import { RfidDevice } from './rfid/entities/rfid-device.entity.js';
-import { RfidTag } from './rfid/entities/rfid-tag.entity.js';
-import { Media } from './media/entities/media.entity.js';
-import { Recommendation } from './recommendation/entities/recommendation.entity.js';
+
+
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      ...dataSourceOptions,
-      entities: [
-        User,
-        UserStylePreference,
-        UserColorPreference,
-        UserLifestyle,
-        UserOccasion,
-        Item,
-        Outfit,
-        RfidDevice,
-        RfidTag,
-        Media,
-        Recommendation
-      ]
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     UserModule,
     AuthModule,
     ItemModule,
