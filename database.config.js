@@ -9,7 +9,9 @@ export const dataSourceOptions = {
   username: process.env.PGUSER || process.env.POSTGRES_USERNAME || 'postgres',
   password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD,
   database: process.env.PGDATABASE || process.env.POSTGRES_DATABASE || 'swadb',
-  entities: ['src/**/*.entity.js'],
+  entities: ['src/**/*.entity.js',
+    'src/**/entities/*.entity.js'
+  ],
   synchronize: process.env.NODE_ENV !== 'production',
   logging: process.env.NODE_ENV === 'development',
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
