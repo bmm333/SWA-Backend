@@ -11,6 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule,{bodyParser:{limit:'10mb'}});
    app.enableCors({
     origin: (origin, callback) => {
+      console.log('CORS Origin:', origin);
       const allowed = [
         'http://192.168.1.7:8080',
         'http://localhost:8080',
@@ -18,7 +19,7 @@ async function bootstrap() {
         process.env.FRONTEND_URL || 'https://swa-flax.vercel.app'
       ].filter(Boolean);
       if (!origin) return callback(null, true);
-      return allowed.includes(origin) ? callback(null, true) : callback(new Error('Not allowed by CORS'));
+      return allowed.includes(origin) ? callback(null, true) : callback(null, false);
     },
     credentials: true,
   });
