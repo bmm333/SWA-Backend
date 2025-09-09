@@ -3,12 +3,12 @@ import { DataSource } from "typeorm";
 
 export const dataSourceOptions = {
   type: "postgres",
-  url: process.env.DATABASE_URL || undefined,
-  host: process.env.PGHOST || process.env.POSTGRES_HOST || 'localhost',
-  port: parseInt(process.env.PGPORT || process.env.POSTGRES_PORT) || 5432,
-  username: process.env.PGUSER || process.env.POSTGRES_USERNAME || 'postgres',
+  url: process.env.DATABASE_URL,
+  host: process.env.PGHOST || process.env.POSTGRES_HOST,
+  port: parseInt(process.env.PGPORT || process.env.POSTGRES_PORT),
+  username: process.env.PGUSER || process.env.POSTGRES_USERNAME,
   password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD,
-  database: process.env.PGDATABASE || process.env.POSTGRES_DATABASE || 'swadb',
+  database: process.env.PGDATABASE || process.env.POSTGRES_DATABASE,
   entities: ['src/**/*.entity.js',
     'src/**/entities/*.entity.js'
   ],

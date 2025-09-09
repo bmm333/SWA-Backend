@@ -33,7 +33,7 @@ async function bootstrap() {
   }));
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT;
   const host = '0.0.0.0';
   await app.listen(port, host);
   console.log(`Server running on http://${host}:${port}`);
