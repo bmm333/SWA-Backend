@@ -1,4 +1,3 @@
-// Enable runtime transpilation of ES modules
 require('@babel/register')({
   presets: [['@babel/preset-env', { targets: { node: 'current' } }]],
   plugins: [
@@ -11,12 +10,29 @@ require('@babel/register')({
   extensions: ['.js', '.jsx', '.ts', '.tsx'],
 });
 
-// Load reflect-metadata for decorators
 require('reflect-metadata');
 
-// Add proper error handling
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received in index.js, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received in index.js, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
 try {
-  // Start the application
   require('./src/main');
   console.log('Application bootstrap started successfully');
 } catch (error) {

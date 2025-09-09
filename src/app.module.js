@@ -27,8 +27,11 @@ import { RfidTag } from './rfid/entities/rfid-tag.entity.js';
 import { Media } from './media/entities/media.entity.js';
 import { Recommendation } from './recommendation/entities/recommendation.entity.js';
 
-@Module({
-  imports: [
+// Make database connection optional
+const databaseImports = [];
+if (process.env.DATABASE_URL) {
+  console.log('Database URL found, enabling database connection');
+  databaseImports.push(
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
@@ -48,7 +51,15 @@ import { Recommendation } from './recommendation/entities/recommendation.entity.
       synchronize: process.env.NODE_ENV !== 'production',
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
       logging: process.env.NODE_ENV === 'development'
-    }),
+    })
+  );
+} else {
+  console.log('No DATABASE_URL found, running without database');
+}
+
+@Module({
+  imports: [
+    ...databaseImports,
     UserModule,
     AuthModule,
     ItemModule,
