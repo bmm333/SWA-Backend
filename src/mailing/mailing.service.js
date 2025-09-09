@@ -1,34 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class MailingService {
   constructor() {
-    this.transporter = this.createTransporter();
-  }
-
-  createTransporter() {
-      return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT) || 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false
-      },
-      connectionTimeout: 60000,  // 60 seconds
-      greetingTimeout: 30000,    // 30 seconds
-      socketTimeout: 60000 
-    });
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   }
 
   async sendAccountDeletionConfirmation(email, firstName = 'User') {
-      const mailOptions = {
-        from: process.env.EMAIL_FROM || '"Smart Wardrobe" <noreply@smartwardrobe.com>',
+      const msg = {
         to: email,
+        from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
         subject: 'Account Deleted - Smart Wardrobe',
         html: `
           <!DOCTYPE html>
@@ -76,9 +58,9 @@ export class MailingService {
       };
 
       try {
-        const result = await this.transporter.sendMail(mailOptions);
-        console.log('Account deletion confirmation sent:', result.messageId);
-        return { success: true, messageId: result.messageId };
+        const result = await sgMail.send(msg);
+        console.log('Account deletion confirmation sent:', result[0].headers['x-message-id']);
+        return { success: true, messageId: result[0].headers['x-message-id'] };
       } catch (error) {
         console.error('Error sending account deletion confirmation:', error);
         return { success: false, error: error.message };
@@ -106,9 +88,9 @@ export class MailingService {
       
       const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:8080'}/verify-email?token=${verificationToken}`;
       
-      const mailOptions = {
-        from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
+      const msg = {
         to: email,
+        from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
         subject: 'Verify Your Smart Wardrobe Account',
         html: `
           <!DOCTYPE html>
@@ -154,9 +136,9 @@ export class MailingService {
         `,
       };
       try {
-        const result = await this.transporter.sendMail(mailOptions);
-        console.log('Verification email sent:', result.messageId);
-        return { success: true, messageId: result.messageId };
+        const result = await sgMail.send(msg);
+        console.log('Verification email sent:', result[0].headers['x-message-id']);
+        return { success: true, messageId: result[0].headers['x-message-id'] };
       } catch (error) {
         console.error('Error sending verification email:', error);
         throw new Error('Failed to send verification email');
@@ -165,9 +147,9 @@ export class MailingService {
 
   async sendPasswordResetEmail(user, resetToken) {
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:8080'}/#/reset-password?token=${resetToken}`;
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
+    const msg = {
       to: user.email,
+      from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
       subject: 'Reset Your Smart Wardrobe Password',
       html: `
         <!DOCTYPE html>
@@ -220,9 +202,9 @@ export class MailingService {
     };
 
     try {
-        const result = await this.transporter.sendMail(mailOptions);
-        console.log('Password reset email sent:', result.messageId);
-        return { success: true, messageId: result.messageId };
+        const result = await sgMail.send(msg);
+        console.log('Password reset email sent:', result[0].headers['x-message-id']);
+        return { success: true, messageId: result[0].headers['x-message-id'] };
       } catch (error) {
         console.error('Error sending password reset email:', error);
         // Return error instead of throwing
@@ -231,9 +213,9 @@ export class MailingService {
   }
 
   async sendPasswordChangeConfirmation(user) {
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || '"Smart Wardrobe" <noreply@smartwardrobe.com>',
+    const msg = {
       to: user.email,
+      from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
       subject: 'Password Changed Successfully',
       html: `
         <!DOCTYPE html>
@@ -286,18 +268,18 @@ export class MailingService {
     };
 
     try {
-      const result = await this.transporter.sendMail(mailOptions);
-      console.log('Password change confirmation sent:', result.messageId);
-      return { success: true, messageId: result.messageId };
+      const result = await sgMail.send(msg);
+      console.log('Password change confirmation sent:', result[0].headers['x-message-id']);
+      return { success: true, messageId: result[0].headers['x-message-id'] };
     } catch (error) {
       console.error('Error sending password change confirmation:', error);
       return { success: false, error: error.message };
     }
   }
   async sendRecommendationNotification(user, recommendations) {
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
+    const msg = {
       to: user.email,
+      from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
       subject: 'New Outfit Recommendations - Smart Wardrobe',
       html: `
         <!DOCTYPE html>
@@ -350,18 +332,18 @@ export class MailingService {
     };
 
     try {
-      const result = await this.transporter.sendMail(mailOptions);
-      console.log('Recommendation notification sent:', result.messageId);
-      return { success: true, messageId: result.messageId };
+      const result = await sgMail.send(msg);
+      console.log('Recommendation notification sent:', result[0].headers['x-message-id']);
+      return { success: true, messageId: result[0].headers['x-message-id'] };
     } catch (error) {
       console.error('Error sending recommendation notification:', error);
       return { success: false, error: error.message };
     }
   }
   async sendEmailChangeNotification(oldEmail, newEmail) {
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || '"Smart Wardrobe" <noreply@smartwardrobe.com>',
+    const msg = {
       to: oldEmail,
+      from: process.env.EMAIL_FROM || 'smartwrdrobe@gmail.com',
       subject: 'Email Address Changed - Smart Wardrobe',
       html: `
         <!DOCTYPE html>
@@ -429,9 +411,9 @@ export class MailingService {
       `,
     };
     try {
-      const result = await this.transporter.sendMail(mailOptions);
-      console.log('Email change notification sent to old address:', result.messageId);
-      return { success: true, messageId: result.messageId };
+      const result = await sgMail.send(msg);
+      console.log('Email change notification sent to old address:', result[0].headers['x-message-id']);
+      return { success: true, messageId: result[0].headers['x-message-id'] };
     } catch (error) {
       console.error('Error sending email change notification:', error);
       return { success: false, error: error.message };
