@@ -21,7 +21,7 @@ async function bootstrap() {
       if (!origin) return callback(null, true);
       return allowed.includes(origin) ? callback(null, true) : callback(null, false);
     },
-    credentials: true,
+    credentials: false,
   });
 
   app.use(express.json({ limit: '10mb' }));
