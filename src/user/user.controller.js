@@ -23,10 +23,35 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Req() req) {
-    const userId = req.user.id ;
-    if (!userId) throw new BadRequestException('Invalid user ID');
-    const result = await this.userService.findOneById(userId);
-    return { user: result };
+    try {
+      console.log('UserController getProfile - req.user:', req.user);
+      console.log('UserController getProfile - req.headers.authorization:', req.headers.authorization);
+      
+      // Check if user exists in request
+      if (!req.user) {
+        console.error('No user found in request object');
+        throw new BadRequestException('Authentication failed - no user found');
+      }
+
+      const userId = req.user.id || req.user.sub;
+      console.log('UserController getProfile - userId:', userId);
+      
+      if (!userId) {
+        console.error('No user ID found in token payload');
+        throw new BadRequestException('Invalid user ID in token');
+      }
+
+      const result = await this.userService.findOneById(userId);
+      console.log('UserController getProfile - result found:', !!result);
+      
+      return { 
+        statusCode: 200,
+        user: result 
+      };
+    } catch (error) {
+      console.error('UserController getProfile error:', error);
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
